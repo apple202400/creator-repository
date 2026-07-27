@@ -708,9 +708,14 @@ $('#clearAllBtn').onclick=()=>{
 $('#planDate').textContent=formatDate();
 renderPlan();
 renderAsset();
-if(!getInspire().list.length){ refreshFromGist(); }
-renderInspire();
-renderHot();
+(async function initData(){
+  if(!getInspire().list.length){
+    await refreshFromGist();
+  } else {
+    renderInspire();
+    renderHot();
+  }
+})();
 </script>
 </body>
 </html>
