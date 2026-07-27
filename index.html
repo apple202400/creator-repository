@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#556B2F">
+<title>宝妈创作工作台</title>
+<style>
+  :root{
+    --olive:#556B2F;        /* 橄榄绿主色 */
+    --olive-dark:#3D4F22;
+    --olive-light:#6B8E3C;
+    --olive-pale:#E8EFD9;
+    --bg:#F5F6F0;
+    --card:#FFFFFF;
+    --text:#2C3320;
+    --text-sub:#6B7355;
+    --line:#E0E4D2;
+    --danger:#C44536;
+    --warn:#E8A33D;
+    --safe:#5B8C5A;
+    --shadow:0 2px 12px rgba(60,70,30,.08);
+    --shadow-hover:0 4px 20px rgba(60,70,30,.15);
+    --radius:16px;
+    --radius-sm:10px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    font-size:15px;
+    line-height:1.6;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+    overflow-x:hidden;
+  }
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,textarea,select{font-family:inherit;font-size:inherit;color:inherit;border:none;outline:none;background:none}
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    background:linear-gradient(135deg,var(--olive),var(--olive-dark));
+    color:#fff;
+    padding:14px 16px;
+    display:flex;align-items:center;gap:12px;
+    box-shadow:0 2px 10px rgba(60,70,30,.18);
+  }
+  .topbar .menu-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:20px}
+  .topbar .menu-btn:active{background:rgba(255,255,255,.15)}
+  .topbar h1{font-size:17px;font-weight:600;flex:1;letter-spacing:.5px}
+  .topbar .refresh-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:18px}
+  .topbar .refresh-btn:active{background:rgba(255,255,255,.15)}
+  .topbar .refresh-btn.spinning svg{animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .drawer-mask{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.4);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s}
+  .drawer-mask.open{opacity:1;visibility:visible}
+  .drawer{position:fixed;top:0;left:0;bottom:0;z-index:90;width:78%;max-width:300px;background:var(--bg);transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+  .drawer.open{transform:translateX(0)}
+  .drawer-head{background:linear-gradient(135deg,var(--olive),var(--olive-dark));color:#fff;padding:24px 20px 28px}
+  .drawer-head .avatar{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:10px}
+  .drawer-head .name{font-size:18px;font-weight:600}
+  .drawer-head .desc{font-size:12px;opacity:.85;margin-top:4px}
+  .drawer-nav{flex:1;overflow-y:auto;padding:10px 0}
+  .nav-item{display:flex;align-items:center;gap:14px;padding:14px 22px;color:var(--text);transition:background .15s;border-left:3px solid transparent}
+  .nav-item:active{background:var(--olive-pale)}
+  .nav-item.active{background:var(--olive-pale);border-left-color:var(--olive);color:var(--olive-dark);font-weight:600}
+  .nav-item .ico{font-size:20px;width:24px;text-align:center}
+  .nav-item .label{flex:1}
+  .drawer-foot{padding:14px 20px;border-top:1px solid var(--line);font-size:12px;color:var(--text-sub)}
+  .main{padding:12px 12px 30px;max-width:680px;margin:0 auto}
+  .page{display:none;animation:fade .25s}
+  .page.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .card{background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .card-title{font-size:15px;font-weight:600;color:var(--olive-dark);display:flex;align-items:center;gap:8px;margin-bottom:12px}
+  .card-title .ico{font-size:18px}
+  .card-title .right{margin-left:auto;font-size:12px;color:var(--text-sub);font-weight:400}
+  .progress-wrap{margin-bottom:6px}
+  .progress-label{display:flex;justify-content:space-between;font-size:13px;color:var(--text-sub);margin-bottom:6px}
+  .progress-bar{height:8px;background:var(--olive-pale);border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--olive-light),var(--olive));border-radius:4px;transition:width .4s ease}
+  .checklist{list-style:none}
+  .check-item{display:flex;align-items:center;gap:10px;padding:11px 4px;border-bottom:1px solid var(--line);font-size:14px}
+  .check-item:last-child{border-bottom:none}
+  .check-item .box{width:22px;height:22px;border:2px solid var(--olive);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+  .check-item.done .box{background:var(--olive);color:#fff}
+  .check-item.done .box::after{content:"✓";font-size:14px;font-weight:bold}
+  .check-item.done .text{color:var(--text-sub);text-decoration:line-through}
+  .check-item .text{flex:1;cursor:pointer}
+  .check-item .del{color:var(--danger);font-size:18px;opacity:0;transition:opacity .15s;padding:4px}
+  .check-item:active .del{opacity:.7}
+  .input-row{display:flex;gap:8px;margin-top:10px}
+  .input-row input{flex:1;background:var(--bg);padding:10px 12px;border-radius:var(--radius-sm);font-size:14px}
+  .btn{padding:10px 16px;border-radius:var(--radius-sm);font-size:14px;font-weight:500;transition:transform .1s,background .15s}
+  .btn:active{transform:scale(.96)}
+  .btn-primary{background:var(--olive);color:#fff}
+  .btn-primary:active{background:var(--olive-dark)}
+  .btn-ghost{background:var(--olive-pale);color:var(--olive-dark)}
+  .btn-outline{border:1.5px solid var(--olive);color:var(--olive-dark);background:transparent}
+  .inspire-card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:12px;box-shadow:var(--shadow);border-left:4px solid var(--olive-light)}
+  .inspire-head{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+  .inspire-title{font-size:15px;font-weight:600;color:var(--text);flex:1;line-height:1.4}
+  .inspire-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+  .tag{font-size:11px;padding:3px 8px;border-radius:10px;background:var(--olive-pale);color:var(--olive-dark)}
+  .tag.hot{background:#FFE8E0;color:#C44536}
+  .tag.new{background:#E0F0FF;color:#2C6FAE}
+  .inspire-desc{font-size:13px;color:var(--text-sub);line-height:1.5;margin-bottom:10px}
+  .inspire-actions{display:flex;gap:8px}
+  .inspire-actions .btn{flex:1;padding:8px;font-size:13px;display:flex;align-items:center;justify-content:center;gap:4px}
+  .btn-douyin{background:#000;color:#fff}
+  .btn-douyin:active{background:#333}
+  .btn-bili{background:#FB7299;color:#fff}
+  .btn-bili:active{background:#E55C82}
+  .hot-card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:12px;box-shadow:var(--shadow);border-left:4px solid var(--danger)}
+  .hot-rank{display:inline-block;min-width:24px;padding:2px 6px;background:var(--danger);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-align:center;margin-right:8px}
+  .hot-title{font-size:15px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;flex-wrap:wrap}
+  .hot-source{font-size:12px;color:var(--text-sub);margin-bottom:10px}
+  .hot-angle{background:var(--olive-pale);border-radius:var(--radius-sm);padding:10px 12px;font-size:13px;color:var(--olive-dark);line-height:1.5;margin-bottom:10px}
+  .hot-angle::before{content:"🎯 改编角度：";font-weight:600;display:block;margin-bottom:4px}
+  .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+  .stat-item{background:var(--olive-pale);border-radius:var(--radius-sm);padding:10px 12px;text-align:center}
+  .stat-item .num{font-size:22px;font-weight:700;color:var(--olive-dark)}
+  .stat-item .lbl{font-size:11px;color:var(--text-sub);margin-top:2px}
+  .textarea{width:100%;background:var(--bg);padding:10px 12px;border-radius:var(--radius-sm);font-size:14px;min-height:60px;resize:vertical;line-height:1.5}
+  .field-label{font-size:13px;font-weight:600;color:var(--olive-dark);margin:10px 0 6px;display:flex;align-items:center;gap:6px}
+  .memo-item{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line)}
+  .memo-item .box{width:20px;height:20px;border:2px solid var(--olive);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+  .memo-item.done .box{background:var(--olive);color:#fff}
+  .memo-item.done .box::after{content:"✓";font-size:12px;font-weight:bold}
+  .memo-item.done .text{color:var(--text-sub);text-decoration:line-through}
+  .memo-item .text{flex:1;font-size:14px;background:transparent;padding:4px 0}
+  .memo-item .text:focus{background:var(--bg);padding:4px 8px;border-radius:4px}
+  .import-card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:12px;box-shadow:var(--shadow)}
+  .import-input{width:100%;background:var(--bg);padding:10px 12px;border-radius:var(--radius-sm);font-size:13px;min-height:60px;margin-bottom:10px;line-height:1.5}
+  .article-item{padding:12px;background:var(--bg);border-radius:var(--radius-sm);margin-bottom:8px}
+  .article-title{font-size:14px;font-weight:600;margin-bottom:4px;color:var(--text)}
+  .article-meta{font-size:11px;color:var(--text-sub);margin-bottom:6px}
+  .article-excerpt{font-size:13px;color:var(--text-sub);line-height:1.5;max-height:60px;overflow:hidden;position:relative}
+  .article-excerpt::after{content:"...";position:absolute;right:0;bottom:0;background:var(--bg);padding-left:4px}
+  .empty-tip{text-align:center;padding:30px 20px;color:var(--text-sub);font-size:13px}
+  .empty-tip .ico{font-size:36px;display:block;margin-bottom:8px;opacity:.5}
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(40,50,20,.92);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;z-index:200;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(-6px)}
+  .bottom-pad{height:20px}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="菜单">☰</button>
+  <h1 id="pageTitle">每日计划</h1>
+  <button class="refresh-btn" id="refreshBtn" aria-label="刷新">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="23 4 23 10 17 10"></polyline>
+      <polyline points="1 20 1 14 7 14"></polyline>
+      <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+    </svg>
+  </button>
+</header>
+<div class="drawer-mask" id="drawerMask"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <div class="avatar">🌱</div>
+    <div class="name">宝妈创作工作台</div>
+    <div class="desc">02年早婚宝妈 · 母婴赛道</div>
+  </div>
+  <nav class="drawer-nav" id="navList">
+    <button class="nav-item active" data-page="plan"><span class="ico">📋</span><span class="label">每日计划</span></button>
+    <button class="nav-item" data-page="inspire"><span class="ico">💡</span><span class="label">选题每日灵感</span></button>
+    <button class="nav-item" data-page="hot"><span class="ico">🔥</span><span class="label">爆款热点二创</span></button>
+    <button class="nav-item" data-page="review"><span class="ico">📊</span><span class="label">内容复盘</span></button>
+    <button class="nav-item" data-page="memo"><span class="ico">📝</span><span class="label">备忘录</span></button>
+    <button class="nav-item" data-page="calc"><span class="ico">🔢</span><span class="label">速算练习</span></button>
+    <button class="nav-item" data-page="essay"><span class="ico">📚</span><span class="label">申论积累</span></button>
+  </nav>
+  <div class="drawer-foot">
+    <div>数据本地存储 · 点击刷新获取每日数据</div>
+    <div style="margin-top:6px">
+      <button class="btn btn-outline" style="font-size:12px;padding:6px 12px" id="clearAllBtn">清除所有数据</button>
+    </div>
+  </div>
+</aside>
+<main class="main">
+  <section class="page active" id="page-plan">
+    <div class="card">
+      <div class="card-title"><span class="ico">📋</span>今日计划进度<span class="right" id="planDate"></span></div>
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span id="planProgressText">完成 0 / 0</span>
+          <span id="planProgressPct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="planProgressFill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="ico">✅</span>今日清单</div>
+      <ul class="checklist" id="planList"></ul>
+      <div class="input-row">
+        <input type="text" id="planInput" placeholder="添加一项待办...">
+        <button class="btn btn-primary" id="planAddBtn">添加</button>
+      </div>
+    </div>
+  </section>
+  <section class="page" id="page-inspire">
+    <div class="card">
+      <div class="card-title"><span class="ico">💡</span>每日10条选题灵感<span class="right" id="inspireDate"></span></div>
+      <div style="font-size:12px;color:var(--text-sub);margin-bottom:10px">AI 根据你的赛道+全网热点生成，每天自动更新</div>
+      <div id="inspireList">
+        <div class="empty-tip"><span class="ico">💤</span>等待数据加载<br>点击右上角刷新按钮获取今日灵感</div>
+      </div>
+    </div>
+  </section>
+  <section class="page" id="page-hot">
+    <div class="card">
+      <div class="card-title"><span class="ico">🔥</span>今日热点 + 二创角度<span class="right" id="hotDate"></span></div>
+      <div style="font-size:12px;color:var(--text-sub);margin-bottom:10px">抖音/B站热榜 + 贴合你赛区的改编方向</div>
+      <div id="hotList">
+        <div class="empty-tip"><span class="ico">🔥</span>等待数据加载<br>点击右上角刷新按钮获取今日热点</div>
+      </div>
+    </div>
+  </section>
+  <section class="page" id="page-review">
+    <div class="card">
+      <div class="card-title"><span class="ico">📊</span>内容复盘<span class="right" id="reviewDate"></span></div>
+      <div style="font-size:13px;color:var(--text-sub);margin-bottom:10px">复盘哪条作品？填数据+总结，自动保存</div>
+      <input type="text" id="reviewTitle" placeholder="作品标题 / 链接" style="width:100%;background:var(--bg);padding:10px 12px;border-radius:10px;font-size:14px;margin-bottom:10px">
+      <div class="stat-grid">
+        <div class="stat-item"><div class="num" id="stPlay" contenteditable>0</div><div class="lbl">播放</div></div>
+        <div class="stat-item"><div class="num" id="stLike" contenteditable>0</div><div class="lbl">点赞</div></div>
+        <div class="stat-item"><div class="num" id="stComment" contenteditable>0</div><div class="lbl">评论</div></div>
+        <div class="stat-item"><div class="num" id="stShare" contenteditable>0</div><div class="lbl">转发</div></div>
+      </div>
+      <div class="field-label">🌟 亮点</div>
+      <textarea class="textarea" id="reviewGood" placeholder="这条哪里做得好？"></textarea>
+      <div class="field-label">⚠️ 问题</div>
+      <textarea class="textarea" id="reviewBad" placeholder="哪里可以改进？"></textarea>
+      <div class="field-label">⚡ 优化方向</div>
+      <textarea class="textarea" id="reviewOpt" placeholder="下次怎么做得更好？"></textarea>
+      <button class="btn btn-primary" id="reviewSaveBtn" style="width:100%;margin-top:14px">保存复盘</button>
+    </div>
+    <div id="reviewHistory"></div>
+  </section>
+  <section class="page" id="page-memo">
+    <div class="card">
+      <div class="card-title"><span class="ico">📝</span>备忘录</div>
+      <div id="memoList"></div>
+      <button class="btn btn-ghost" id="memoAddBtn" style="width:100%;margin-top:10px">+ 加一行</button>
+    </div>
+  </section>
+  <section class="page" id="page-calc">
+    <div class="card">
+      <div class="card-title"><span class="ico">🔢</span>速算练习导入</div>
+      <div style="font-size:13px;color:var(--text-sub);margin-bottom:10px">粘贴微信文章链接，自动抓取正文</div>
+      <textarea class="import-input" id="calcUrlInput" placeholder="粘贴文章链接（一行一个）&#10;例：https://mp.weixin.qq.com/s/xxx"></textarea>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" id="calcFetchBtn" style="flex:1">抓取并导入</button>
+        <button class="btn btn-ghost" id="calcPasteBtn" style="flex:1">手动粘贴正文</button>
+      </div>
+    </div>
+    <div id="calcList">
+      <div class="empty-tip"><span class="ico">🔢</span>还没有速算练习<br>粘贴微信文章链接开始导入</div>
+    </div>
+  </section>
+  <section class="page" id="page-essay">
+    <div class="card">
+      <div class="card-title"><span class="ico">📚</span>申论积累导入</div>
+      <div style="font-size:13px;color:var(--text-sub);margin-bottom:10px">粘贴微信文章链接，自动抓取正文</div>
+      <textarea class="import-input" id="essayUrlInput" placeholder="粘贴文章链接（一行一个）&#10;例：https://mp.weixin.qq.com/s/xxx"></textarea>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" id="essayFetchBtn" style="flex:1">抓取并导入</button>
+        <button class="btn btn-ghost" id="essayPasteBtn" style="flex:1">手动粘贴正文</button>
+      </div>
+    </div>
+    <div id="essayList">
+      <div class="empty-tip"><span class="ico">📚</span>还没有申论积累<br>粘贴微信文章链接开始导入</div>
+    </div>
+  </section>
+  <div class="bottom-pad"></div>
+</main>
+<div class="toast" id="toast"></div>
+<script>
+const CONFIG = {
+  gistId: '996448e01dfea0739b6b7e15243342f6',
+  gistUser: 'apple202400',
+  gistFile: 'creator-data.json',
+  douyinScheme: 'snssdk1128://',
+  biliScheme: 'bilibili://',
+  douyinSearch: 'https://www.douyin.com/search/',
+  biliSearch: 'https://search.bilibili.com/all?keyword='
+};
+const DB = {
+  get(k, def){ try{ const v = localStorage.getItem('cb_'+k); return v? JSON.parse(v): def; }catch(e){ return def; } },
+  set(k, v){ localStorage.setItem('cb_'+k, JSON.stringify(v)); }
+};
+function $(s){return document.querySelector(s);}
+function $$(s){return document.querySelectorAll(s);}
+function todayKey(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function formatDate(){ const d=new Date(); return (d.getMonth()+1)+'月'+d.getDate()+'日 '+'周日周一周二周三周四周五周六'[d.getDay()]; }
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._tm); t._tm=setTimeout(()=>t.classList.remove('show'),2000); }
+function esc(s){ return String(s||'').replace(/[<>&"']/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c])); }
+
+const drawer=$('#drawer'), mask=$('#drawerMask');
+function openDrawer(){ drawer.classList.add('open'); mask.classList.add('open'); }
+function closeDrawer(){ drawer.classList.remove('open'); mask.classList.remove('open'); }
+$('#menuBtn').onclick=openDrawer;
+mask.onclick=closeDrawer;
+
+const pageNames={plan:'每日计划',inspire:'选题每日灵感',hot:'爆款热点二创',review:'内容复盘',memo:'备忘录',calc:'速算练习',essay:'申论积累'};
+$$('#navList .nav-item').forEach(btn=>{
+  btn.onclick=()=>{
+    $$('#navList .nav-item').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const p=btn.dataset.page;
+    $$('.page').forEach(pg=>pg.classList.remove('active'));
+    $('#page-'+p).classList.add('active');
+    $('#pageTitle').textContent=pageNames[p];
+    closeDrawer();
+    renderPage(p);
+  };
+});
+function renderPage(p){
+  if(p==='plan') renderPlan();
+  if(p==='inspire') renderInspire();
+  if(p==='hot') renderHot();
+  if(p==='review') renderReview();
+  if(p==='memo') renderMemo();
+  if(p==='calc') renderCalc();
+  if(p==='essay') renderEssay();
+}
+
+function getPlan(){ const all=DB.get('plan',{}); return all[todayKey()]||[]; }
+function savePlan(list){ const all=DB.get('plan',{}); all[todayKey()]=list; DB.set('plan',all); }
+function renderPlan(){
+  $('#planDate').textContent=formatDate();
+  const list=getPlan();
+  $('#planList').innerHTML = list.length? list.map((it,i)=>'<li class="check-item '+(it.done?'done':'')+'"><div class="box" onclick="togglePlan('+i+')"></div><div class="text" onclick="togglePlan('+i+')">'+esc(it.text)+'</div><button class="del" onclick="delPlan('+i+')">×</button></li>').join('') : '<div class="empty-tip"><span class="ico">📋</span>今日还没有计划<br>添加第一项待办吧</div>';
+  const done=list.filter(x=>x.done).length;
+  const pct=list.length? Math.round(done/list.length*100):0;
+  $('#planProgressText').textContent='完成 '+done+' / '+list.length;
+  $('#planProgressPct').textContent=pct+'%';
+  $('#planProgressFill').style.width=pct+'%';
+}
+function togglePlan(i){ const l=getPlan(); l[i].done=!l[i].done; savePlan(l); renderPlan(); }
+function delPlan(i){ const l=getPlan(); l.splice(i,1); savePlan(l); renderPlan(); }
+$('#planAddBtn').onclick=()=>{
+  const v=$('#planInput').value.trim();
+  if(!v) return toast('请输入内容');
+  const l=getPlan(); l.push({text:v,done:false}); savePlan(l);
+  $('#planInput').value=''; renderPlan(); toast('已添加');
+};
+$('#planInput').addEventListener('keydown',e=>{ if(e.key==='Enter') $('#planAddBtn').click(); });
+
+function getInspire(){ return DB.get('inspire',{date:'',list:[]}); }
+function saveInspire(data){ DB.set('inspire',data); }
+function renderInspire(){
+  const d=getInspire();
+  $('#inspireDate').textContent=d.date||'未更新';
+  if(!d.list.length){ $('#inspireList').innerHTML='<div class="empty-tip"><span class="ico">💤</span>等待数据加载<br>点击右上角刷新按钮获取今日灵感</div>'; return; }
+  $('#inspireList').innerHTML=d.list.map((it,i)=>'<div class="inspire-card"><div class="inspire-head"><span class="inspire-title">'+(i+1)+'. '+esc(it.title)+'</span></div><div class="inspire-tags">'+(it.tags||[]).map(t=>'<span class="tag '+(t==='爆款'?'hot':t==='新鲜'?'new':'')+'">'+esc(t)+'</span>').join('')+'</div><div class="inspire-desc">'+esc(it.desc)+'</div><div class="inspire-actions"><button class="btn btn-douyin" onclick="openApp(\'douyin\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">🎬 抖音</button><button class="btn btn-bili" onclick="openApp(\'bili\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">📺 B站</button></div></div>').join('');
+}
+function openApp(type,keyword){
+  const enc=encodeURIComponent(keyword);
+  if(type==='douyin'){
+    window.location.href=CONFIG.douyinScheme+'search?keyword='+enc;
+    setTimeout(()=>{ if(!document.hidden) window.open(CONFIG.douyinSearch+enc,'_blank'); },1500);
+  } else {
+    window.location.href=CONFIG.biliScheme+'search?keyword='+enc;
+    setTimeout(()=>{ if(!document.hidden) window.open(CONFIG.biliSearch+enc,'_blank'); },1500);
+  }
+}
+
+function getHot(){ return DB.get('hot',{date:'',list:[]}); }
+function saveHot(data){ DB.set('hot',data); }
+function renderHot(){
+  const d=getHot();
+  $('#hotDate').textContent=d.date||'未更新';
+  if(!d.list.length){ $('#hotList').innerHTML='<div class="empty-tip"><span class="ico">🔥</span>等待数据加载<br>点击右上角刷新按钮获取今日热点</div>'; return; }
+  $('#hotList').innerHTML=d.list.map((it,i)=>'<div class="hot-card"><div class="hot-title"><span class="hot-rank">'+(i+1)+'</span>'+esc(it.title)+'</div><div class="hot-source">📍 '+esc(it.source||'全网')+' · 🔥 '+esc(it.hot||'热度上升中')+'</div><div class="hot-angle">'+esc(it.angle)+'</div><div class="inspire-actions"><button class="btn btn-douyin" onclick="openApp(\'douyin\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">🎬 抖音看原片</button><button class="btn btn-bili" onclick="openApp(\'bili\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">📺 B站找素材</button></div></div>').join('');
+}
+
+function getReviews(){ return DB.get('reviews',[]); }
+function saveReviews(v){ DB.set('reviews',v); }
+function renderReview(){
+  $('#reviewDate').textContent=formatDate();
+  const list=getReviews();
+  $('#reviewHistory').innerHTML = list.length? list.slice(-5).reverse().map((r,i)=>'<div class="card"><div style="font-size:14px;font-weight:600;margin-bottom:8px">'+esc(r.title||'未命名')+'</div><div class="stat-grid" style="margin-bottom:8px"><div class="stat-item"><div class="num" style="font-size:16px">'+esc(r.play||0)+'</div><div class="lbl">播放</div></div><div class="stat-item"><div class="num" style="font-size:16px">'+esc(r.like||0)+'</div><div class="lbl">点赞</div></div><div class="stat-item"><div class="num" style="font-size:16px">'+esc(r.comment||0)+'</div><div class="lbl">评论</div></div><div class="stat-item"><div class="num" style="font-size:16px">'+esc(r.share||0)+'</div><div class="lbl">转发</div></div></div>'+(r.good?'<div style="font-size:13px;margin-bottom:4px"><b>🌟 亮点：</b>'+esc(r.good)+'</div>':'')+(r.bad?'<div style="font-size:13px;margin-bottom:4px"><b>⚠️ 问题：</b>'+esc(r.bad)+'</div>':'')+(r.opt?'<div style="font-size:13px"><b>⚡ 优化：</b>'+esc(r.opt)+'</div>':'')+'<div style="font-size:11px;color:var(--text-sub);margin-top:8px">'+esc(r.date||'')+'</div></div>').join('') : '';
+}
+$('#reviewSaveBtn').onclick=()=>{
+  const r={
+    title:$('#reviewTitle').value.trim(),
+    play:$('#stPlay').textContent.trim(),
+    like:$('#stLike').textContent.trim(),
+    comment:$('#stComment').textContent.trim(),
+    share:$('#stShare').textContent.trim(),
+    good:$('#reviewGood').value.trim(),
+    bad:$('#reviewBad').value.trim(),
+    opt:$('#reviewOpt').value.trim(),
+    date:formatDate()+' '+new Date().toTimeString().slice(0,5)
+  };
+  if(!r.title && !r.good && !r.bad){ return toast('请至少填写标题或复盘内容'); }
+  const list=getReviews(); list.push(r); saveReviews(list);
+  $('#reviewTitle').value='';$('#reviewGood').value='';$('#reviewBad').value='';$('#reviewOpt').value='';
+  $('#stPlay').textContent='0';$('#stLike').textContent='0';$('#stComment').textContent='0';$('#stShare').textContent='0';
+  renderReview(); toast('复盘已保存');
+};
+
+function getMemo(){ return DB.get('memo',Array(5).fill('').map(()=>({text:'',done:false}))); }
+function saveMemo(v){ DB.set('memo',v); }
+function renderMemo(){
+  const list=getMemo();
+  $('#memoList').innerHTML=list.map((it,i)=>'<div class="memo-item '+(it.done?'done':'')+'"><div class="box" onclick="toggleMemo('+i+')"></div><input class="text" value="'+esc(it.text)+'" oninput="editMemo('+i+',this.value)" placeholder="记一笔..."></div>').join('');
+}
+function toggleMemo(i){ const l=getMemo(); l[i].done=!l[i].done; saveMemo(l); renderMemo(); }
+function editMemo(i,v){ const l=getMemo(); l[i].text=v; saveMemo(l); }
+$('#memoAddBtn').onclick=()=>{ const l=getMemo(); l.push({text:'',done:false}); saveMemo(l); renderMemo(); };
+
+function getCalc(){ return DB.get('calc',[]); }
+function saveCalc(v){ DB.set('calc',v); }
+function renderCalc(){
+  const list=getCalc();
+  if(!list.length){ $('#calcList').innerHTML='<div class="empty-tip"><span class="ico">🔢</span>还没有速算练习<br>粘贴微信文章链接开始导入</div>'; return; }
+  $('#calcList').innerHTML=list.map((a,i)=>'<div class="article-item"><div class="article-title">'+esc(a.title)+'</div><div class="article-meta">'+esc(a.date||'')+(a.url?' · <a href="'+esc(a.url)+'" target="_blank" style="color:var(--olive)">原文</a>':'')+'</div><div class="article-excerpt">'+esc(a.excerpt||a.content||'')+'</div></div>').join('');
+}
+async function fetchArticle(url, type){
+  if(!url) return;
+  toast('正在抓取...');
+  try{
+    const proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(url);
+    const res=await fetch(proxy);
+    const html=await res.text();
+    const doc=new DOMParser().parseFromString(html,'text/html');
+    const title=doc.querySelector('#activity-name')?.textContent?.trim() || doc.querySelector('h1')?.textContent?.trim() || '未命名文章';
+    const content=doc.querySelector('#js_content')?.textContent?.trim().slice(0,500) || doc.body?.textContent?.trim().slice(0,500) || '';
+    const list=getCalc();
+    list.push({title,content,excerpt:content.slice(0,150),url,date:formatDate()});
+    saveCalc(list); renderCalc(); toast('已导入');
+  }catch(e){ toast('抓取失败,请用手动粘贴'); }
+}
+$('#calcFetchBtn').onclick=()=>{
+  const urls=$('#calcUrlInput').value.trim().split('\n').filter(Boolean);
+  if(!urls.length) return toast('请粘贴文章链接');
+  urls.forEach(u=>fetchArticle(u,'calc'));
+  $('#calcUrlInput').value='';
+};
+$('#calcPasteBtn').onclick=()=>{
+  const list=getCalc();
+  list.push({title:'手动笔记 '+formatDate(),content:'',excerpt:'',url:'',date:formatDate()});
+  saveCalc(list); renderCalc(); toast('已添加,点击编辑');
+};
+
+function getEssay(){ return DB.get('essay',[]); }
+function saveEssay(v){ DB.set('essay',v); }
+function renderEssay(){
+  const list=getEssay();
+  if(!list.length){ $('#essayList').innerHTML='<div class="empty-tip"><span class="ico">📚</span>还没有申论积累<br>粘贴微信文章链接开始导入</div>'; return; }
+  $('#essayList').innerHTML=list.map((a,i)=>'<div class="article-item"><div class="article-title">'+esc(a.title)+'</div><div class="article-meta">'+esc(a.date||'')+(a.url?' · <a href="'+esc(a.url)+'" target="_blank" style="color:var(--olive)">原文</a>':'')+'</div><div class="article-excerpt">'+esc(a.excerpt||a.content||'')+'</div></div>').join('');
+}
+$('#essayFetchBtn').onclick=()=>{
+  const urls=$('#essayUrlInput').value.trim().split('\n').filter(Boolean);
+  if(!urls.length) return toast('请粘贴文章链接');
+  urls.forEach(u=>{
+    (async()=>{
+      toast('正在抓取...');
+      try{
+        const proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(u);
+        const res=await fetch(proxy);
+        const html=await res.text();
+        const doc=new DOMParser().parseFromString(html,'text/html');
+        const title=doc.querySelector('#activity-name')?.textContent?.trim() || doc.querySelector('h1')?.textContent?.trim() || '未命名文章';
+        const content=doc.querySelector('#js_content')?.textContent?.trim().slice(0,500) || doc.body?.textContent?.trim().slice(0,500) || '';
+        const list=getEssay();
+        list.push({title,content,excerpt:content.slice(0,150),url:u,date:formatDate()});
+        saveEssay(list); renderEssay(); toast('已导入');
+      }catch(e){ toast('抓取失败,请用手动粘贴'); }
+    })();
+  });
+  $('#essayUrlInput').value='';
+};
+$('#essayPasteBtn').onclick=()=>{
+  const list=getEssay();
+  list.push({title:'手动笔记 '+formatDate(),content:'',excerpt:'',url:'',date:formatDate()});
+  saveEssay(list); renderEssay(); toast('已添加,点击编辑');
+};
+
+async function refreshFromGist(){
+  const btn=$('#refreshBtn');
+  btn.classList.add('spinning');
+  toast('正在获取今日数据...');
+  try{
+    if(CONFIG.gistId){
+      const url='https://gist.githubusercontent.com/'+CONFIG.gistUser+'/'+CONFIG.gistId+'/raw/'+CONFIG.gistFile;
+      const res=await fetch(url+'?t='+Date.now());
+      if(res.ok){
+        const content=await res.json();
+        if(content.inspire){ saveInspire(content.inspire); }
+        if(content.hot){ saveHot(content.hot); }
+        if(content.calc){ saveCalc(content.calc); }
+        if(content.essay){ saveEssay(content.essay); }
+        toast('数据已更新');
+      }else{ toast('Gist 读取失败: '+res.status); }
+    }else{
+      loadDemoData();
+      toast('已加载示例数据(配置Gist后自动更新)');
+    }
+    renderInspire(); renderHot(); renderCalc(); renderEssay();
+  }catch(e){
+    toast('刷新失败: '+e.message);
+    loadDemoData();
+    renderInspire(); renderHot();
+  }finally{
+    btn.classList.remove('spinning');
+  }
+}
+$('#refreshBtn').onclick=refreshFromGist;
+
+function loadDemoData(){
+  const demo={
+    date:formatDate(),
+    list:[
+      {title:'02年宝妈的一天:娃突然会叫妈妈了',tags:['爆款','情绪共鸣'],desc:'记录宝宝第一次清晰叫妈妈的瞬间,搭配新手妈妈的真实反应,容易引发同频宝妈共鸣'},
+      {title:'早婚早育真的好吗?25岁带娃vs同龄人都在玩',tags:['争议','成长'],desc:'对比同龄人生活状态,讲早婚宝妈的真实感受,既有甜也有累,容易引发讨论'},
+      {title:'全职宝妈的一天到底在忙什么',tags:['日常','共鸣'],desc:'用快剪手法展示一天真实带娃日常,打破"全职妈妈很闲"的刻板印象'},
+      {title:'新手妈妈崩溃瞬间:宝宝夜醒第8次',tags:['情绪','痛点'],desc:'深夜带娃崩溃的真实记录,容易引发宝妈群体的情感共鸣和转发'},
+      {title:'02年宝妈省钱攻略:月入3千养娃不焦虑',tags:['干货','实用'],desc:'分享低成本育儿好物和省钱技巧,实用性强,收藏率高'},
+      {title:'婚后第一年:从二人世界到三口之家',tags:['夫妻','成长'],desc:'记录婚姻关系在宝宝出生后的变化,容易引发夫妻话题讨论'},
+      {title:'宝宝辅食初尝试:5分钟搞定营养餐',tags:['干货','母婴'],desc:'简单易做的辅食教程,新手妈妈最爱收藏的内容类型'},
+      {title:'全职妈妈的自我成长:带娃也能赚钱',tags:['成长','副业'],desc:'分享带娃期间如何保持学习和副业,引发宝妈群体关注'},
+      {title:'和老公带娃分工:谁更累?',tags:['夫妻','争议'],desc:'记录夫妻带娃的真实分工,容易引发评论区讨论和转发'},
+      {title:'宝宝第一次生病:新手妈妈慌了',tags:['痛点','情绪'],desc:'记录宝宝生病的真实经历和应对,容易引发宝妈群体的共鸣和收藏'}
+    ]
+  };
+  saveInspire(demo);
+  const demoHot={
+    date:formatDate(),
+    list:[
+      {title:'某明星晒娃引发育儿方式讨论',source:'抖音热榜',hot:'热度上升',angle:'从02年宝妈视角切入,评论明星育儿方式,延伸到普通宝妈的真实困境,用对比手法引发共鸣'},
+      {title:'某地幼儿园开学季话题',source:'全网热搜',hot:'今日热点',angle:'结合自家宝宝未来入园焦虑,讲新手妈妈对教育的早期思考,容易引发同频宝妈讨论'},
+      {title:'某母婴好物测评视频爆火',source:'B站热门',hot:'播放量高',angle:'从省钱角度做平替版测评,聚焦月入3千宝妈也能用的好物,差异化定位'}
+    ]
+  };
+  saveHot(demoHot);
+}
+
+$('#clearAllBtn').onclick=()=>{
+  if(!confirm('确定清除所有数据?此操作不可恢复')) return;
+  ['plan','inspire','hot','reviews','memo','calc','essay'].forEach(k=>localStorage.removeItem('cb_'+k));
+  toast('已清除所有数据');
+  setTimeout(()=>location.reload(),800);
+};
+
+$('#planDate').textContent=formatDate();
+renderPlan();
+renderMemo();
+if(!getInspire().list.length){ loadDemoData(); }
+renderInspire();
+renderHot();
+</script>
+</body>
+</html>
