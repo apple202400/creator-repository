@@ -490,7 +490,8 @@ async function refreshFromGist(){
   toast('正在获取今日数据...');
   try{
     if(CONFIG.gistId){
-      const url='https://gist.githubusercontent.com/'+CONFIG.gistUser+'/'+CONFIG.gistId+'/raw/'+CONFIG.gistFile;
+      // 从仓库读取每日数据(同域,无跨域,国内 CDN 可加速)
+      const url='./creator-data.json';
       const res=await fetch(url+'?t='+Date.now());
       if(res.ok){
         const content=await res.json();
