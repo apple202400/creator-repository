@@ -60,9 +60,26 @@
   .drawer{position:fixed;top:0;left:0;bottom:0;z-index:90;width:78%;max-width:300px;background:var(--bg);transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
   .drawer.open{transform:translateX(0)}
   .drawer-head{background:linear-gradient(135deg,var(--olive),var(--olive-dark));color:#fff;padding:24px 20px 28px}
-  .drawer-head .avatar{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:10px}
-  .drawer-head .name{font-size:18px;font-weight:600}
-  .drawer-head .desc{font-size:12px;opacity:.85;margin-top:4px}
+  .drawer-head .avatar{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:10px;cursor:pointer}
+  .drawer-head .avatar:active{opacity:.7}
+  .drawer-head .name{font-size:18px;font-weight:600;cursor:pointer}
+  .drawer-head .desc{font-size:12px;opacity:.85;margin-top:4px;cursor:pointer}
+  /* profile modal */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;display:flex;align-items:flex-end;justify-content:center}
+  .modal-overlay .modal{background:#fff;border-radius:16px 16px 0 0;width:100%;max-width:500px;padding:24px 20px 32px;animation:slideUp .25s}
+  @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .modal h3{font-size:18px;text-align:center;margin-bottom:20px}
+  .modal .field{margin-bottom:16px}
+  .modal .field label{display:block;font-size:13px;color:var(--text-sub);margin-bottom:6px}
+  .modal .field input{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-size:15px;outline:none;box-sizing:border-box}
+  .modal .field input:focus{border-color:var(--olive)}
+  .modal .avatar-picker{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+  .modal .avatar-picker span{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid transparent;cursor:pointer;transition:border .15s}
+  .modal .avatar-picker span.selected{border-color:var(--olive);background:var(--olive-pale)}
+  .modal .btn-row{display:flex;gap:10px}
+  .modal .btn-row button{flex:1;padding:14px;border-radius:10px;font-size:16px;font-weight:600;border:none;cursor:pointer}
+  .modal .btn-save{background:var(--olive);color:#fff}
+  .modal .btn-cancel{background:var(--olive-pale);color:var(--olive-dark)}
   .drawer-nav{flex:1;overflow-y:auto;padding:10px 0}
   .nav-item{display:flex;align-items:center;gap:14px;padding:14px 22px;color:var(--text);transition:background .15s;border-left:3px solid transparent}
   .nav-item:active{background:var(--olive-pale)}
@@ -161,10 +178,10 @@
 </header>
 <div class="drawer-mask" id="drawerMask"></div>
 <aside class="drawer" id="drawer">
-  <div class="drawer-head">
-    <div class="avatar">🌱</div>
-    <div class="name">宝妈创作工作台</div>
-    <div class="desc">02年早婚宝妈 · 母婴赛道</div>
+  <div class="drawer-head" id="drawerHead">
+    <div class="avatar" id="avatarEl" onclick="editProfile()">🌱</div>
+    <div class="name" id="nameEl" onclick="editProfile()">宝妈创作工作台</div>
+    <div class="desc" id="descEl" onclick="editProfile()">02年早婚宝妈 · 母婴赛道</div>
   </div>
   <nav class="drawer-nav" id="navList">
     <button class="nav-item active" data-page="plan"><span class="ico">📋</span><span class="label">每日计划</span></button>
@@ -698,6 +715,67 @@ $('#clearAllBtn').onclick=()=>{
   toast('已清除所有数据');
   setTimeout(()=>location.reload(),800);
 };
+
+// ========== 个人资料编辑 ==========
+function editProfile(){
+  const avatar=load('profile_avatar')||'🌱';
+  const name=load('profile_name')||'宝妈创作工作台';
+  const desc=load('profile_desc')||'02年早婚宝妈 · 母婴赛道';
+  const avatars=['🌱','🌸','🌟','💖','✨','🍼','👶','🐣','🎀','🌈','🍀','💫'];
+  let pick=avatar;
+  const overlay=document.createElement('div');
+  overlay.className='modal-overlay';
+  overlay.innerHTML=`
+    <div class="modal">
+      <h3>编辑个人资料</h3>
+      <div class="field">
+        <label>选择头像</label>
+        <div class="avatar-picker">${avatars.map(a=>`<span class="${a===pick?'selected':''}" data-a="${a}">${a}</span>`).join('')}</div>
+      </div>
+      <div class="field">
+        <label>名称</label>
+        <input id="editName" value="${escHtml(name)}" placeholder="输入你的名称">
+      </div>
+      <div class="field">
+        <label>简介</label>
+        <input id="editDesc" value="${escHtml(desc)}" placeholder="输入简介">
+      </div>
+      <div class="btn-row">
+        <button class="btn-cancel" id="btnCancel">取消</button>
+        <button class="btn-save" id="btnSave">保存</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  // 头像选择
+  overlay.querySelectorAll('.avatar-picker span').forEach(el=>{
+    el.onclick=()=>{
+      overlay.querySelectorAll('.avatar-picker span').forEach(s=>s.classList.remove('selected'));
+      el.classList.add('selected');
+      pick=el.dataset.a;
+    };
+  });
+  overlay.querySelector('#btnCancel').onclick=()=>overlay.remove();
+  overlay.querySelector('#btnSave').onclick=()=>{
+    const n=overlay.querySelector('#editName').value.trim()||'宝妈创作工作台';
+    const d=overlay.querySelector('#editDesc').value.trim()||'02年早婚宝妈 · 母婴赛道';
+    save('profile_avatar',pick);
+    save('profile_name',n);
+    save('profile_desc',d);
+    applyProfile();
+    overlay.remove();
+  };
+  overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};
+}
+function applyProfile(){
+  const a=load('profile_avatar')||'🌱';
+  const n=load('profile_name')||'宝妈创作工作台';
+  const d=load('profile_desc')||'02年早婚宝妈 · 母婴赛道';
+  $('#avatarEl').textContent=a;
+  $('#nameEl').textContent=n;
+  $('#descEl').textContent=d;
+}
+function escHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+applyProfile();
 
 $('#planDate').textContent=formatDate();
 renderPlan();
