@@ -1,0 +1,33 @@
+name: 每日采集任务
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # 北京 08:00
+    - cron: '0 6 * * *'   # 北京 14:00
+    - cron: '0 12 * * *'  # 北京 20:00
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - run: python daily_fetch.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GIST_ID: ${{ secrets.GIST_ID }}
+          AI_API_KEY: ${{ secrets.AI_API_KEY }}
+          AI_BASE_URL: ${{ secrets.AI_BASE_URL }}
+          AI_MODEL: ${{ secrets.AI_MODEL }}
+          TRACK_KEYWORDS: ${{ secrets.TRACK_KEYWORDS }}
+          WECHAT_ACCOUNTS: ${{ secrets.WECHAT_ACCOUNTS }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-output-${{ github.run_id }}
+          path: daily_output_*.json
+          retention-days: 30
