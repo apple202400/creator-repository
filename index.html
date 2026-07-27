@@ -170,10 +170,7 @@
     <button class="nav-item active" data-page="plan"><span class="ico">📋</span><span class="label">每日计划</span></button>
     <button class="nav-item" data-page="inspire"><span class="ico">💡</span><span class="label">选题每日灵感</span></button>
     <button class="nav-item" data-page="hot"><span class="ico">🔥</span><span class="label">爆款热点二创</span></button>
-    <button class="nav-item" data-page="review"><span class="ico">📊</span><span class="label">内容复盘</span></button>
-    <button class="nav-item" data-page="memo"><span class="ico">📝</span><span class="label">备忘录</span></button>
-    <button class="nav-item" data-page="calc"><span class="ico">🔢</span><span class="label">速算练习</span></button>
-    <button class="nav-item" data-page="essay"><span class="ico">📚</span><span class="label">申论积累</span></button>
+    <button class="nav-item" data-page="asset"><span class="ico">💰</span><span class="label">我的资产</span></button>
   </nav>
   <div class="drawer-foot">
     <div>数据本地存储 · 点击刷新获取每日数据</div>
@@ -221,62 +218,56 @@
       </div>
     </div>
   </section>
-  <section class="page" id="page-review">
+  <section class="page" id="page-asset">
     <div class="card">
-      <div class="card-title"><span class="ico">📊</span>内容复盘<span class="right" id="reviewDate"></span></div>
-      <div style="font-size:13px;color:var(--text-sub);margin-bottom:10px">复盘哪条作品？填数据+总结，自动保存</div>
-      <input type="text" id="reviewTitle" placeholder="作品标题 / 链接" style="width:100%;background:var(--bg);padding:10px 12px;border-radius:10px;font-size:14px;margin-bottom:10px">
-      <div class="stat-grid">
-        <div class="stat-item"><div class="num" id="stPlay" contenteditable>0</div><div class="lbl">播放</div></div>
-        <div class="stat-item"><div class="num" id="stLike" contenteditable>0</div><div class="lbl">点赞</div></div>
-        <div class="stat-item"><div class="num" id="stComment" contenteditable>0</div><div class="lbl">评论</div></div>
-        <div class="stat-item"><div class="num" id="stShare" contenteditable>0</div><div class="lbl">转发</div></div>
+      <div class="card-title"><span class="ico">💰</span>我的资产<span class="right" id="assetDate"></span></div>
+      <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);gap:8px">
+        <div class="stat-item"><div class="num" id="astTotal" style="font-size:16px">0</div><div class="lbl">总资产</div></div>
+        <div class="stat-item"><div class="num" id="astIncome" style="font-size:16px;color:var(--safe)">0</div><div class="lbl">收入</div></div>
+        <div class="stat-item"><div class="num" id="astExpense" style="font-size:16px;color:var(--danger)">0</div><div class="lbl">支出</div></div>
+        <div class="stat-item"><div class="num" id="astDebt" style="font-size:16px;color:var(--warn)">0</div><div class="lbl">负债</div></div>
       </div>
-      <div class="field-label">🌟 亮点</div>
-      <textarea class="textarea" id="reviewGood" placeholder="这条哪里做得好？"></textarea>
-      <div class="field-label">⚠️ 问题</div>
-      <textarea class="textarea" id="reviewBad" placeholder="哪里可以改进？"></textarea>
-      <div class="field-label">⚡ 优化方向</div>
-      <textarea class="textarea" id="reviewOpt" placeholder="下次怎么做得更好？"></textarea>
-      <button class="btn btn-primary" id="reviewSaveBtn" style="width:100%;margin-top:14px">保存复盘</button>
-    </div>
-    <div id="reviewHistory"></div>
-  </section>
-  <section class="page" id="page-memo">
-    <div class="card">
-      <div class="card-title"><span class="ico">📝</span>备忘录</div>
-      <div id="memoList"></div>
-      <button class="btn btn-ghost" id="memoAddBtn" style="width:100%;margin-top:10px">+ 加一行</button>
-    </div>
-  </section>
-  <section class="page" id="page-calc">
-    <div class="card">
-      <div class="card-title"><span class="ico">🔢</span>速算练习导入</div>
-      <div style="font-size:13px;color:var(--text-sub);margin-bottom:10px">粘贴微信文章链接，自动抓取正文</div>
-      <textarea class="import-input" id="calcUrlInput" placeholder="粘贴文章链接（一行一个）&#10;例：https://mp.weixin.qq.com/s/xxx"></textarea>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-primary" id="calcFetchBtn" style="flex:1">抓取并导入</button>
-        <button class="btn btn-ghost" id="calcPasteBtn" style="flex:1">手动粘贴正文</button>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="btn btn-primary" id="assetEditBtn" style="flex:1;font-size:13px">编辑资产数据</button>
       </div>
     </div>
-    <div id="calcList">
-      <div class="empty-tip"><span class="ico">🔢</span>还没有速算练习<br>粘贴微信文章链接开始导入</div>
-    </div>
-  </section>
-  <section class="page" id="page-essay">
+
     <div class="card">
-      <div class="card-title"><span class="ico">📚</span>申论积累导入</div>
-      <div style="font-size:13px;color:var(--text-sub);margin-bottom:10px">粘贴微信文章链接，自动抓取正文</div>
-      <textarea class="import-input" id="essayUrlInput" placeholder="粘贴文章链接（一行一个）&#10;例：https://mp.weixin.qq.com/s/xxx"></textarea>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-primary" id="essayFetchBtn" style="flex:1">抓取并导入</button>
-        <button class="btn btn-ghost" id="essayPasteBtn" style="flex:1">手动粘贴正文</button>
+      <div class="card-title"><span class="ico">📅</span>每月待还日历</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <button class="btn btn-ghost" id="calPrevBtn" style="padding:6px 10px;font-size:13px">◀</button>
+        <span id="calMonthLabel" style="font-size:14px;font-weight:600"></span>
+        <button class="btn btn-ghost" id="calNextBtn" style="padding:6px 10px;font-size:13px">▶</button>
       </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:var(--text-sub);margin-bottom:6px">
+        <div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div>
+      </div>
+      <div id="calGrid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center"></div>
     </div>
-    <div id="essayList">
-      <div class="empty-tip"><span class="ico">📚</span>还没有申论积累<br>粘贴微信文章链接开始导入</div>
+
+    <div class="card">
+      <div class="card-title"><span class="ico">💳</span>账单管理</div>
+      <div id="billList"></div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <input type="text" id="billName" placeholder="账单名(花呗/白条/信用卡)" style="flex:1;background:var(--bg);padding:10px 12px;border-radius:10px;font-size:14px">
+        <input type="number" id="billAmount" placeholder="金额" style="width:90px;background:var(--bg);padding:10px 12px;border-radius:10px;font-size:14px">
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <input type="number" id="billDay" placeholder="还款日" style="flex:1;background:var(--bg);padding:10px 12px;border-radius:10px;font-size:14px" min="1" max="31">
+        <select id="billType" style="flex:1;background:var(--bg);padding:10px 12px;border-radius:10px;font-size:14px;border:1px solid var(--line)">
+          <option value="花呗">花呗</option>
+          <option value="白条">白条</option>
+          <option value="信用卡">信用卡</option>
+          <option value="其他">其他</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="billAddBtn" style="width:100%;margin-top:10px">添加账单</button>
     </div>
   </section>
+  
+  
+  
+  
   <div class="bottom-pad"></div>
 </main>
 <div class="toast" id="toast"></div>
@@ -307,7 +298,7 @@ function closeDrawer(){ drawer.classList.remove('open'); mask.classList.remove('
 $('#menuBtn').onclick=openDrawer;
 mask.onclick=closeDrawer;
 
-const pageNames={plan:'每日计划',inspire:'选题每日灵感',hot:'爆款热点二创',review:'内容复盘',memo:'备忘录',calc:'速算练习',essay:'申论积累'};
+const pageNames={plan:'每日计划',inspire:'选题每日灵感',hot:'爆款热点二创',asset:'我的资产'};
 $$('#navList .nav-item').forEach(btn=>{
   btn.onclick=()=>{
     $$('#navList .nav-item').forEach(b=>b.classList.remove('active'));
@@ -324,10 +315,7 @@ function renderPage(p){
   if(p==='plan') renderPlan();
   if(p==='inspire') renderInspire();
   if(p==='hot') renderHot();
-  if(p==='review') renderReview();
-  if(p==='memo') renderMemo();
-  if(p==='calc') renderCalc();
-  if(p==='essay') renderEssay();
+  if(p==='asset') renderAsset();
 }
 
 function getPlan(){ const all=DB.get('plan',{}); return all[todayKey()]||[]; }
@@ -380,25 +368,7 @@ function renderHot(){
   $('#hotList').innerHTML=d.list.map((it,i)=>'<div class="hot-card"><div class="hot-title"><span class="hot-rank">'+(i+1)+'</span>'+esc(it.title)+'</div><div class="hot-source">📍 '+esc(it.source||'全网')+' · 🔥 '+esc(it.hot||'热度上升中')+'</div><div class="hot-angle">'+esc(it.angle)+'</div><div class="inspire-actions"><button class="btn btn-douyin" onclick="openApp(\'douyin\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">🎬 抖音看原片</button><button class="btn btn-xhs" onclick="openApp(\'xhs\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">📕 小红书找素材</button></div></div>').join('');
 }
 
-function getReviews(){ return DB.get('reviews',[]); }
-function saveReviews(v){ DB.set('reviews',v); }
-function renderReview(){
-  $('#reviewDate').textContent=formatDate();
-  const list=getReviews();
-  $('#reviewHistory').innerHTML = list.length? list.slice(-5).reverse().map((r,i)=>'<div class="card"><div style="font-size:14px;font-weight:600;margin-bottom:8px">'+esc(r.title||'未命名')+'</div><div class="stat-grid" style="margin-bottom:8px"><div class="stat-item"><div class="num" style="font-size:16px">'+esc(r.play||0)+'</div><div class="lbl">播放</div></div><div class="stat-item"><div class="num" style="font-size:16px">'+esc(r.like||0)+'</div><div class="lbl">点赞</div></div><div class="stat-item"><div class="num" style="font-size:16px">'+esc(r.comment||0)+'</div><div class="lbl">评论</div></div><div class="stat-item"><div class="num" style="font-size:16px">'+esc(r.share||0)+'</div><div class="lbl">转发</div></div></div>'+(r.good?'<div style="font-size:13px;margin-bottom:4px"><b>🌟 亮点：</b>'+esc(r.good)+'</div>':'')+(r.bad?'<div style="font-size:13px;margin-bottom:4px"><b>⚠️ 问题：</b>'+esc(r.bad)+'</div>':'')+(r.opt?'<div style="font-size:13px"><b>⚡ 优化：</b>'+esc(r.opt)+'</div>':'')+'<div style="font-size:11px;color:var(--text-sub);margin-top:8px">'+esc(r.date||'')+'</div></div>').join('') : '';
-}
-$('#reviewSaveBtn').onclick=()=>{
-  const r={
-    title:$('#reviewTitle').value.trim(),
-    play:$('#stPlay').textContent.trim(),
-    like:$('#stLike').textContent.trim(),
-    comment:$('#stComment').textContent.trim(),
-    share:$('#stShare').textContent.trim(),
-    good:$('#reviewGood').value.trim(),
-    bad:$('#reviewBad').value.trim(),
-    opt:$('#reviewOpt').value.trim(),
-    date:formatDate()+' '+new Date().toTimeString().slice(0,5)
-  };
+
   if(!r.title && !r.good && !r.bad){ return toast('请至少填写标题或复盘内容'); }
   const list=getReviews(); list.push(r); saveReviews(list);
   $('#reviewTitle').value='';$('#reviewGood').value='';$('#reviewBad').value='';$('#reviewOpt').value='';
@@ -406,82 +376,125 @@ $('#reviewSaveBtn').onclick=()=>{
   renderReview(); toast('复盘已保存');
 };
 
-function getMemo(){ return DB.get('memo',Array(5).fill('').map(()=>({text:'',done:false}))); }
-function saveMemo(v){ DB.set('memo',v); }
-function renderMemo(){
-  const list=getMemo();
-  $('#memoList').innerHTML=list.map((it,i)=>'<div class="memo-item '+(it.done?'done':'')+'"><div class="box" onclick="toggleMemo('+i+')"></div><input class="text" value="'+esc(it.text)+'" oninput="editMemo('+i+',this.value)" placeholder="记一笔..."></div>').join('');
-}
-function toggleMemo(i){ const l=getMemo(); l[i].done=!l[i].done; saveMemo(l); renderMemo(); }
-function editMemo(i,v){ const l=getMemo(); l[i].text=v; saveMemo(l); }
-$('#memoAddBtn').onclick=()=>{ const l=getMemo(); l.push({text:'',done:false}); saveMemo(l); renderMemo(); };
 
-function getCalc(){ return DB.get('calc',[]); }
-function saveCalc(v){ DB.set('calc',v); }
-function renderCalc(){
-  const list=getCalc();
-  if(!list.length){ $('#calcList').innerHTML='<div class="empty-tip"><span class="ico">🔢</span>还没有速算练习<br>粘贴微信文章链接开始导入</div>'; return; }
-  $('#calcList').innerHTML=list.map((a,i)=>'<div class="article-item"><div class="article-title">'+esc(a.title)+'</div><div class="article-meta">'+esc(a.date||'')+(a.url?' · <a href="'+esc(a.url)+'" target="_blank" style="color:var(--olive)">原文</a>':'')+'</div><div class="article-excerpt">'+esc(a.excerpt||a.content||'')+'</div></div>').join('');
+
+
+
+
+
+
+/* ========== 资产模块 ========== */
+function getAsset(){ return DB.get('asset',{total:0,income:0,expense:0,debt:0,bills:[]}); }
+function saveAsset(v){ DB.set('asset',v); }
+function getBills(){ return getAsset().bills||[]; }
+function saveBills(list){ const a=getAsset(); a.bills=list; saveAsset(a); recalcAsset(); }
+
+function recalcAsset(){
+  const a=getAsset();
+  const bills=a.bills||[];
+  let debt=0;
+  bills.forEach(b=>{ if(!b.paid) debt+=parseFloat(b.amount)||0; });
+  a.debt=debt;
+  a.total=a.income-a.expense-debt;
+  saveAsset(a);
 }
-async function fetchArticle(url, type){
-  if(!url) return;
-  toast('正在抓取...');
-  try{
-    const proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(url);
-    const res=await fetch(proxy);
-    const html=await res.text();
-    const doc=new DOMParser().parseFromString(html,'text/html');
-    const title=doc.querySelector('#activity-name')?.textContent?.trim() || doc.querySelector('h1')?.textContent?.trim() || '未命名文章';
-    const content=doc.querySelector('#js_content')?.textContent?.trim().slice(0,500) || doc.body?.textContent?.trim().slice(0,500) || '';
-    const list=getCalc();
-    list.push({title,content,excerpt:content.slice(0,150),url,date:formatDate()});
-    saveCalc(list); renderCalc(); toast('已导入');
-  }catch(e){ toast('抓取失败,请用手动粘贴'); }
+
+function renderAsset(){
+  const a=getAsset();
+  $('#assetDate').textContent=formatDate();
+  $('#astTotal').textContent=a.total||0;
+  $('#astIncome').textContent=a.income||0;
+  $('#astExpense').textContent=a.expense||0;
+  $('#astDebt').textContent=a.debt||0;
+  renderCalendar();
+  renderBills();
 }
-$('#calcFetchBtn').onclick=()=>{
-  const urls=$('#calcUrlInput').value.trim().split('\n').filter(Boolean);
-  if(!urls.length) return toast('请粘贴文章链接');
-  urls.forEach(u=>fetchArticle(u,'calc'));
-  $('#calcUrlInput').value='';
+
+/* 小日历 */
+let calYear, calMonth;
+function initCal(){
+  const now=new Date();
+  calYear=now.getFullYear();
+  calMonth=now.getMonth()+1;
+}
+function renderCalendar(){
+  if(!calYear) initCal();
+  $('#calMonthLabel').textContent=calYear+'年'+calMonth+'月';
+  const firstDay=new Date(calYear,calMonth-1,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth,0).getDate();
+  const bills=getBills();
+  let html='';
+  for(let i=0;i<firstDay;i++) html+='<div></div>';
+  for(let d=1;d<=daysInMonth;d++){
+    const dateStr=calYear+'-'+String(calMonth).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const dayBills=bills.filter(b=>b.day==d);
+    let cls='';
+    if(dayBills.length){
+      const hasUnpaid=dayBills.some(b=>!b.paid);
+      cls=hasUnpaid?'style="background:#FFE8E0;border-radius:6px;font-weight:600;color:var(--danger)"':'style="background:var(--olive-pale);border-radius:6px"';
+    }
+    const isToday=new Date().getDate()==d && new Date().getMonth()+1==calMonth && new Date().getFullYear()==calYear;
+    if(isToday) cls='style="background:var(--olive);color:#fff;border-radius:50%;font-weight:600"';
+    html+='<div '+cls+'>'+d+'</div>';
+  }
+  $('#calGrid').innerHTML=html;
+}
+$('#calPrevBtn').onclick=()=>{
+  calMonth--; if(calMonth<1){calMonth=12;calYear--;}
+  renderCalendar();
 };
-$('#calcPasteBtn').onclick=()=>{
-  const list=getCalc();
-  list.push({title:'手动笔记 '+formatDate(),content:'',excerpt:'',url:'',date:formatDate()});
-  saveCalc(list); renderCalc(); toast('已添加,点击编辑');
+$('#calNextBtn').onclick=()=>{
+  calMonth++; if(calMonth>12){calMonth=1;calYear++;}
+  renderCalendar();
 };
 
-function getEssay(){ return DB.get('essay',[]); }
-function saveEssay(v){ DB.set('essay',v); }
-function renderEssay(){
-  const list=getEssay();
-  if(!list.length){ $('#essayList').innerHTML='<div class="empty-tip"><span class="ico">📚</span>还没有申论积累<br>粘贴微信文章链接开始导入</div>'; return; }
-  $('#essayList').innerHTML=list.map((a,i)=>'<div class="article-item"><div class="article-title">'+esc(a.title)+'</div><div class="article-meta">'+esc(a.date||'')+(a.url?' · <a href="'+esc(a.url)+'" target="_blank" style="color:var(--olive)">原文</a>':'')+'</div><div class="article-excerpt">'+esc(a.excerpt||a.content||'')+'</div></div>').join('');
+/* 账单管理 */
+function renderBills(){
+  const bills=getBills();
+  if(!bills.length){
+    $('#billList').innerHTML='<div class="empty-tip"><span class="ico">💳</span>还没有账单<br>添加花呗/白条/信用卡待还</div>';
+    return;
+  }
+  $('#billList').innerHTML=bills.map((b,i)=>'<div class="check-item '+(b.paid?'done':'')+'" style="align-items:center"><div class="box" onclick="toggleBill('+i+')"></div><div class="text" style="flex:1" onclick="toggleBill('+i+')">'+esc(b.type)+' - '+esc(b.name)+'</div><div style="font-size:14px;font-weight:600;color:'+(b.paid?'var(--text-sub)':'var(--danger)')+'">¥'+esc(b.amount)+'</div><div style="font-size:11px;color:var(--text-sub);margin-left:6px">每月'+esc(b.day)+'号</div><button class="del" onclick="delBill('+i+')" style="opacity:1;font-size:16px">×</button></div>').join('');
 }
-$('#essayFetchBtn').onclick=()=>{
-  const urls=$('#essayUrlInput').value.trim().split('\n').filter(Boolean);
-  if(!urls.length) return toast('请粘贴文章链接');
-  urls.forEach(u=>{
-    (async()=>{
-      toast('正在抓取...');
-      try{
-        const proxy='https://api.allorigins.win/raw?url='+encodeURIComponent(u);
-        const res=await fetch(proxy);
-        const html=await res.text();
-        const doc=new DOMParser().parseFromString(html,'text/html');
-        const title=doc.querySelector('#activity-name')?.textContent?.trim() || doc.querySelector('h1')?.textContent?.trim() || '未命名文章';
-        const content=doc.querySelector('#js_content')?.textContent?.trim().slice(0,500) || doc.body?.textContent?.trim().slice(0,500) || '';
-        const list=getEssay();
-        list.push({title,content,excerpt:content.slice(0,150),url:u,date:formatDate()});
-        saveEssay(list); renderEssay(); toast('已导入');
-      }catch(e){ toast('抓取失败,请用手动粘贴'); }
-    })();
-  });
-  $('#essayUrlInput').value='';
+function toggleBill(i){
+  const bills=getBills();
+  bills[i].paid=!bills[i].paid;
+  saveBills(bills);
+  renderBills();
+  renderCalendar();
+}
+function delBill(i){
+  const bills=getBills();
+  bills.splice(i,1);
+  saveBills(bills);
+  renderBills();
+  renderCalendar();
+}
+$('#billAddBtn').onclick=()=>{
+  const name=$('#billName').value.trim();
+  const amount=$('#billAmount').value.trim();
+  const day=$('#billDay').value.trim();
+  const type=$('#billType').value;
+  if(!name) return toast('请输入账单名称');
+  if(!amount||isNaN(amount)) return toast('请输入正确金额');
+  if(!day||day<1||day>31) return toast('请输入还款日(1-31)');
+  const bills=getBills();
+  bills.push({name,amount:parseFloat(amount).toFixed(2),day:parseInt(day),type,paid:false});
+  saveBills(bills);
+  $('#billName').value='';$('#billAmount').value='';$('#billDay').value='';
+  renderBills(); renderCalendar(); toast('已添加');
 };
-$('#essayPasteBtn').onclick=()=>{
-  const list=getEssay();
-  list.push({title:'手动笔记 '+formatDate(),content:'',excerpt:'',url:'',date:formatDate()});
-  saveEssay(list); renderEssay(); toast('已添加,点击编辑');
+$('#assetEditBtn').onclick=()=>{
+  const a=getAsset();
+  const income=prompt('月收入:',a.income||0);
+  const expense=prompt('月支出:',a.expense||0);
+  if(income!==null) a.income=parseFloat(income)||0;
+  if(expense!==null) a.expense=parseFloat(expense)||0;
+  saveAsset(a);
+  recalcAsset();
+  renderAsset();
+  toast('资产已更新');
 };
 
 async function refreshFromGist(){
@@ -497,15 +510,14 @@ async function refreshFromGist(){
         const content=await res.json();
         if(content.inspire){ saveInspire(content.inspire); }
         if(content.hot){ saveHot(content.hot); }
-        if(content.calc){ saveCalc(content.calc); }
-        if(content.essay){ saveEssay(content.essay); }
+        
         toast('数据已更新');
       }else{ toast('Gist 读取失败: '+res.status); }
     }else{
       loadDemoData();
       toast('已加载示例数据(配置Gist后自动更新)');
     }
-    renderInspire(); renderHot(); renderCalc(); renderEssay();
+    renderInspire(); renderHot(); renderAsset();
   }catch(e){
     toast('刷新失败: '+e.message);
     loadDemoData();
@@ -546,14 +558,14 @@ function loadDemoData(){
 
 $('#clearAllBtn').onclick=()=>{
   if(!confirm('确定清除所有数据?此操作不可恢复')) return;
-  ['plan','inspire','hot','reviews','memo','calc','essay'].forEach(k=>localStorage.removeItem('cb_'+k));
+  ['plan','inspire','hot','asset'].forEach(k=>localStorage.removeItem('cb_'+k));
   toast('已清除所有数据');
   setTimeout(()=>location.reload(),800);
 };
 
 $('#planDate').textContent=formatDate();
 renderPlan();
-renderMemo();
+renderAsset();
 if(!getInspire().list.length){ loadDemoData(); }
 renderInspire();
 renderHot();
