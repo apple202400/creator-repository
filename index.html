@@ -112,8 +112,8 @@
   .inspire-actions .btn{flex:1;padding:8px;font-size:13px;display:flex;align-items:center;justify-content:center;gap:4px}
   .btn-douyin{background:#000;color:#fff}
   .btn-douyin:active{background:#333}
-  .btn-bili{background:#FB7299;color:#fff}
-  .btn-bili:active{background:#E55C82}
+  .btn-xhs{background:#FE2C55;color:#fff}
+  .btn-xhs:active{background:#E02648}
   .hot-card{background:var(--card);border-radius:var(--radius);padding:14px;margin-bottom:12px;box-shadow:var(--shadow);border-left:4px solid var(--danger)}
   .hot-rank{display:inline-block;min-width:24px;padding:2px 6px;background:var(--danger);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-align:center;margin-right:8px}
   .hot-title{font-size:15px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;flex-wrap:wrap}
@@ -215,7 +215,7 @@
   <section class="page" id="page-hot">
     <div class="card">
       <div class="card-title"><span class="ico">🔥</span>今日热点 + 二创角度<span class="right" id="hotDate"></span></div>
-      <div style="font-size:12px;color:var(--text-sub);margin-bottom:10px">抖音/B站热榜 + 贴合你赛区的改编方向</div>
+      <div style="font-size:12px;color:var(--text-sub);margin-bottom:10px">抖音/小红书热榜 + 贴合你赛区的改编方向</div>
       <div id="hotList">
         <div class="empty-tip"><span class="ico">🔥</span>等待数据加载<br>点击右上角刷新按钮获取今日热点</div>
       </div>
@@ -286,9 +286,9 @@ const CONFIG = {
   gistUser: 'apple202400',
   gistFile: 'creator-data.json',
   douyinScheme: 'snssdk1128://',
-  biliScheme: 'bilibili://',
+  biliScheme: 'xhsdiscover://',
   douyinSearch: 'https://www.douyin.com/search/',
-  biliSearch: 'https://search.bilibili.com/all?keyword='
+  xhsSearch: 'https://www.xiaohongshu.com/search_result?keyword='
 };
 const DB = {
   get(k, def){ try{ const v = localStorage.getItem('cb_'+k); return v? JSON.parse(v): def; }catch(e){ return def; } },
@@ -358,7 +358,7 @@ function renderInspire(){
   const d=getInspire();
   $('#inspireDate').textContent=d.date||'未更新';
   if(!d.list.length){ $('#inspireList').innerHTML='<div class="empty-tip"><span class="ico">💤</span>等待数据加载<br>点击右上角刷新按钮获取今日灵感</div>'; return; }
-  $('#inspireList').innerHTML=d.list.map((it,i)=>'<div class="inspire-card"><div class="inspire-head"><span class="inspire-title">'+(i+1)+'. '+esc(it.title)+'</span></div><div class="inspire-tags">'+(it.tags||[]).map(t=>'<span class="tag '+(t==='爆款'?'hot':t==='新鲜'?'new':'')+'">'+esc(t)+'</span>').join('')+'</div><div class="inspire-desc">'+esc(it.desc)+'</div><div class="inspire-actions"><button class="btn btn-douyin" onclick="openApp(\'douyin\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">🎬 抖音</button><button class="btn btn-bili" onclick="openApp(\'bili\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">📺 B站</button></div></div>').join('');
+  $('#inspireList').innerHTML=d.list.map((it,i)=>'<div class="inspire-card"><div class="inspire-head"><span class="inspire-title">'+(i+1)+'. '+esc(it.title)+'</span></div><div class="inspire-tags">'+(it.tags||[]).map(t=>'<span class="tag '+(t==='爆款'?'hot':t==='新鲜'?'new':'')+'">'+esc(t)+'</span>').join('')+'</div><div class="inspire-desc">'+esc(it.desc)+'</div><div class="inspire-actions"><button class="btn btn-douyin" onclick="openApp(\'douyin\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">🎬 抖音</button><button class="btn btn-xhs" onclick="openApp(\'xhs\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">📕 小红书</button></div></div>').join('');
 }
 function openApp(type,keyword){
   const enc=encodeURIComponent(keyword);
@@ -367,7 +367,7 @@ function openApp(type,keyword){
     setTimeout(()=>{ if(!document.hidden) window.open(CONFIG.douyinSearch+enc,'_blank'); },1500);
   } else {
     window.location.href=CONFIG.biliScheme+'search?keyword='+enc;
-    setTimeout(()=>{ if(!document.hidden) window.open(CONFIG.biliSearch+enc,'_blank'); },1500);
+    setTimeout(()=>{ if(!document.hidden) window.open(CONFIG.xhsSearch+enc,'_blank'); },1500);
   }
 }
 
@@ -377,7 +377,7 @@ function renderHot(){
   const d=getHot();
   $('#hotDate').textContent=d.date||'未更新';
   if(!d.list.length){ $('#hotList').innerHTML='<div class="empty-tip"><span class="ico">🔥</span>等待数据加载<br>点击右上角刷新按钮获取今日热点</div>'; return; }
-  $('#hotList').innerHTML=d.list.map((it,i)=>'<div class="hot-card"><div class="hot-title"><span class="hot-rank">'+(i+1)+'</span>'+esc(it.title)+'</div><div class="hot-source">📍 '+esc(it.source||'全网')+' · 🔥 '+esc(it.hot||'热度上升中')+'</div><div class="hot-angle">'+esc(it.angle)+'</div><div class="inspire-actions"><button class="btn btn-douyin" onclick="openApp(\'douyin\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">🎬 抖音看原片</button><button class="btn btn-bili" onclick="openApp(\'bili\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">📺 B站找素材</button></div></div>').join('');
+  $('#hotList').innerHTML=d.list.map((it,i)=>'<div class="hot-card"><div class="hot-title"><span class="hot-rank">'+(i+1)+'</span>'+esc(it.title)+'</div><div class="hot-source">📍 '+esc(it.source||'全网')+' · 🔥 '+esc(it.hot||'热度上升中')+'</div><div class="hot-angle">'+esc(it.angle)+'</div><div class="inspire-actions"><button class="btn btn-douyin" onclick="openApp(\'douyin\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">🎬 抖音看原片</button><button class="btn btn-xhs" onclick="openApp(\'xhs\',\''+esc(it.title).replace(/'/g,"\\'")+'\')">📕 小红书找素材</button></div></div>').join('');
 }
 
 function getReviews(){ return DB.get('reviews',[]); }
@@ -538,7 +538,7 @@ function loadDemoData(){
     list:[
       {title:'某明星晒娃引发育儿方式讨论',source:'抖音热榜',hot:'热度上升',angle:'从02年宝妈视角切入,评论明星育儿方式,延伸到普通宝妈的真实困境,用对比手法引发共鸣'},
       {title:'某地幼儿园开学季话题',source:'全网热搜',hot:'今日热点',angle:'结合自家宝宝未来入园焦虑,讲新手妈妈对教育的早期思考,容易引发同频宝妈讨论'},
-      {title:'某母婴好物测评视频爆火',source:'B站热门',hot:'播放量高',angle:'从省钱角度做平替版测评,聚焦月入3千宝妈也能用的好物,差异化定位'}
+      {title:'某母婴好物测评视频爆火',source:'小红书热门',hot:'播放量高',angle:'从省钱角度做平替版测评,聚焦月入3千宝妈也能用的好物,差异化定位'}
     ]
   };
   saveHot(demoHot);
