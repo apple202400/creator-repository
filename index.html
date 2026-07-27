@@ -370,13 +370,7 @@ function renderHot(){
 
 
   if(!r.title && !r.good && !r.bad){ return toast('请至少填写标题或复盘内容'); }
-  const list=getReviews(); list.push(r); saveReviews(list);
-  $('#reviewTitle').value='';$('#reviewGood').value='';$('#reviewBad').value='';$('#reviewOpt').value='';
-  $('#stPlay').textContent='0';$('#stLike').textContent='0';$('#stComment').textContent='0';$('#stShare').textContent='0';
-  renderReview(); toast('复盘已保存');
-};
-
-
+  const list=getReviews(); list.pu
 
 
 
