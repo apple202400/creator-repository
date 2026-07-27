@@ -718,9 +718,9 @@ $('#clearAllBtn').onclick=()=>{
 
 // ========== 个人资料编辑 ==========
 function editProfile(){
-  const avatar=load('profile_avatar')||'🌱';
-  const name=load('profile_name')||'宝妈创作工作台';
-  const desc=load('profile_desc')||'02年早婚宝妈 · 母婴赛道';
+  const avatar=DB.get('profile_avatar','🌱');
+  const name=DB.get('profile_name','宝妈创作工作台');
+  const desc=DB.get('profile_desc','02年早婚宝妈 · 母婴赛道');
   const avatars=['🌱','🌸','🌟','💖','✨','🍼','👶','🐣','🎀','🌈','🍀','💫'];
   let pick=avatar;
   const overlay=document.createElement('div');
@@ -734,11 +734,11 @@ function editProfile(){
       </div>
       <div class="field">
         <label>名称</label>
-        <input id="editName" value="${escHtml(name)}" placeholder="输入你的名称">
+        <input id="editName" value="${esc(name)}" placeholder="输入你的名称">
       </div>
       <div class="field">
         <label>简介</label>
-        <input id="editDesc" value="${escHtml(desc)}" placeholder="输入简介">
+        <input id="editDesc" value="${esc(desc)}" placeholder="输入简介">
       </div>
       <div class="btn-row">
         <button class="btn-cancel" id="btnCancel">取消</button>
@@ -746,7 +746,6 @@ function editProfile(){
       </div>
     </div>`;
   document.body.appendChild(overlay);
-  // 头像选择
   overlay.querySelectorAll('.avatar-picker span').forEach(el=>{
     el.onclick=()=>{
       overlay.querySelectorAll('.avatar-picker span').forEach(s=>s.classList.remove('selected'));
@@ -758,23 +757,22 @@ function editProfile(){
   overlay.querySelector('#btnSave').onclick=()=>{
     const n=overlay.querySelector('#editName').value.trim()||'宝妈创作工作台';
     const d=overlay.querySelector('#editDesc').value.trim()||'02年早婚宝妈 · 母婴赛道';
-    save('profile_avatar',pick);
-    save('profile_name',n);
-    save('profile_desc',d);
+    DB.set('profile_avatar',pick);
+    DB.set('profile_name',n);
+    DB.set('profile_desc',d);
     applyProfile();
     overlay.remove();
   };
   overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};
 }
 function applyProfile(){
-  const a=load('profile_avatar')||'🌱';
-  const n=load('profile_name')||'宝妈创作工作台';
-  const d=load('profile_desc')||'02年早婚宝妈 · 母婴赛道';
+  const a=DB.get('profile_avatar','🌱');
+  const n=DB.get('profile_name','宝妈创作工作台');
+  const d=DB.get('profile_desc','02年早婚宝妈 · 母婴赛道');
   $('#avatarEl').textContent=a;
   $('#nameEl').textContent=n;
   $('#descEl').textContent=d;
 }
-function escHtml(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 applyProfile();
 
 $('#planDate').textContent=formatDate();
